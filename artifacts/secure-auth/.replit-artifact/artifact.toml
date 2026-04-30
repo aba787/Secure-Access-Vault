@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Secure Auth System"
+version = "1.0.0"
+id = "artifacts/secure-auth"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21936
+
+[services.development]
+run = "pnpm --filter @workspace/secure-auth run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/secure-auth", "run", "build" ]
+publicDir = "artifacts/secure-auth/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21936"
+BASE_PATH = "/"
