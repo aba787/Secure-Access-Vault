@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "sbWJVBo1hBXsEsBEGV7VZ"
+uri = "file://README.md"
+type = "text"
+title = "توثيق المشروع — Secure Vault"
