@@ -70,6 +70,79 @@ export const GetMeResponse = zod.object({
 });
 
 /**
+ * @summary List all notes for current user
+ */
+export const ListNotesResponseItem = zod.object({
+  id: zod.number(),
+  userId: zod.number(),
+  title: zod.string(),
+  content: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const ListNotesResponse = zod.array(ListNotesResponseItem);
+
+/**
+ * @summary Create a new encrypted note
+ */
+export const createNoteBodyTitleMax = 200;
+
+export const CreateNoteBody = zod.object({
+  title: zod.string().min(1).max(createNoteBodyTitleMax),
+  content: zod.string().min(1),
+});
+
+/**
+ * @summary Get a single decrypted note
+ */
+export const GetNoteParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetNoteResponse = zod.object({
+  id: zod.number(),
+  userId: zod.number(),
+  title: zod.string(),
+  content: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Update an existing note (re-encrypts content)
+ */
+export const UpdateNoteParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const updateNoteBodyTitleMax = 200;
+
+export const UpdateNoteBody = zod.object({
+  title: zod.string().min(1).max(updateNoteBodyTitleMax),
+  content: zod.string().min(1),
+});
+
+export const UpdateNoteResponse = zod.object({
+  id: zod.number(),
+  userId: zod.number(),
+  title: zod.string(),
+  content: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete a note
+ */
+export const DeleteNoteParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteNoteResponse = zod.object({
+  message: zod.string(),
+});
+
+/**
  * @summary List all users (admin only)
  */
 export const AdminListUsersResponseItem = zod.object({

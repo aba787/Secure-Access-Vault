@@ -1,13 +1,21 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useGetMe, useLogout, getGetMeQueryKey } from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
-import { LogOut, Shield, User as UserIcon, LayoutDashboard, ShieldAlert } from "lucide-react";
+import { LogOut, Shield, User as UserIcon, LayoutDashboard, ShieldAlert, NotebookPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 
-export function AuthLayout({ children, requireAuth = true, requireAdmin = false }: { children: ReactNode, requireAuth?: boolean, requireAdmin?: boolean }) {
+export function AuthLayout({
+  children,
+  requireAuth = true,
+  requireAdmin = false,
+}: {
+  children: ReactNode;
+  requireAuth?: boolean;
+  requireAdmin?: boolean;
+}) {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -16,7 +24,7 @@ export function AuthLayout({ children, requireAuth = true, requireAdmin = false 
     query: {
       queryKey: getGetMeQueryKey(),
       retry: false,
-    }
+    },
   });
 
   const logout = useLogout({
@@ -25,9 +33,23 @@ export function AuthLayout({ children, requireAuth = true, requireAdmin = false 
         queryClient.setQueryData(getGetMeQueryKey(), null);
         setLocation("/");
         toast({ title: "Logged out successfully" });
-      }
-    }
+      },
+    },
   });
+
+  const isAuthed = !isLoading && !!user && !isError;
+  const isAdmin = user?.role === "admin";
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (requireAuth && !isAuthed) {
+      setLocation("/");
+    } else if (requireAdmin && !isAdmin) {
+      setLocation("/dashboard");
+    } else if (!requireAuth && isAuthed) {
+      setLocation(isAdmin ? "/admin" : "/dashboard");
+    }
+  }, [isLoading, isAuthed, isAdmin, requireAuth, requireAdmin, setLocation]);
 
   if (isLoading) {
     return (
@@ -43,24 +65,9 @@ export function AuthLayout({ children, requireAuth = true, requireAdmin = false 
     );
   }
 
-  const isAuthed = !!user && !isError;
-  const isAdmin = user?.role === "admin";
-
-  if (requireAuth && !isAuthed) {
-    setLocation("/");
-    return null;
-  }
-
-  if (requireAdmin && !isAdmin) {
-    setLocation("/dashboard");
-    return null;
-  }
-
-  if (!requireAuth && isAuthed) {
-    // If we're on login/register but already authed, redirect
-    setLocation(isAdmin ? "/admin" : "/dashboard");
-    return null;
-  }
+  if (requireAuth && !isAuthed) return null;
+  if (requireAdmin && !isAdmin) return null;
+  if (!requireAuth && isAuthed) return null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -72,12 +79,12 @@ export function AuthLayout({ children, requireAuth = true, requireAdmin = false 
               <span className="font-bold tracking-tight">VAULT</span>
             </div>
 
-            <nav className="flex items-center gap-4">
+            <nav className="flex items-center gap-1">
               {isAdmin && (
                 <Button variant="ghost" size="sm" asChild>
                   <Link href="/admin" className="flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4" />
-                    <span className="hidden sm:inline">Admin Panel</span>
+                    <span className="hidden sm:inline">Admin</span>
                   </Link>
                 </Button>
               )}
@@ -87,14 +94,20 @@ export function AuthLayout({ children, requireAuth = true, requireAdmin = false 
                   <span className="hidden sm:inline">Dashboard</span>
                 </Link>
               </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/notes" className="flex items-center gap-2">
+                  <NotebookPen className="w-4 h-4" />
+                  <span className="hidden sm:inline">Notes</span>
+                </Link>
+              </Button>
               <div className="h-6 w-px bg-border mx-2" />
-              <div className="flex items-center gap-3 text-sm text-muted-foreground mr-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mr-1">
                 <UserIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">{user.username}</span>
+                <span className="hidden sm:inline">{user?.username}</span>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => logout.mutate()}
                 disabled={logout.isPending}
                 className="gap-2"
@@ -106,9 +119,7 @@ export function AuthLayout({ children, requireAuth = true, requireAdmin = false 
           </div>
         </header>
       )}
-      <main className="flex-1 flex flex-col">
-        {children}
-      </main>
+      <main className="flex-1 flex flex-col">{children}</main>
     </div>
   );
 }

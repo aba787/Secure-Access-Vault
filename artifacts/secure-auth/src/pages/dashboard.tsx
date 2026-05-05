@@ -1,8 +1,11 @@
 import { useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, User as UserIcon, Calendar, Key, AlertTriangle, Fingerprint, Activity } from "lucide-react";
+import { Shield, User as UserIcon, Calendar, Key, AlertTriangle, Fingerprint, Activity, FileText, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
+import { Link } from "wouter";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const { data: user, isLoading } = useGetMe({
@@ -103,6 +106,35 @@ export default function Dashboard() {
                   </AlertDescription>
                 </Alert>
               )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Vault Services */}
+        <div className="mt-6">
+          <Card className="border-border/50 shadow-md bg-card/50 backdrop-blur">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                Secure Vault Services
+              </CardTitle>
+              <CardDescription>Access your encrypted personal data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <Link href="/notes" className="group flex flex-col justify-between p-4 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 hover:border-primary/30 transition-all cursor-pointer h-full">
+                  <div className="mb-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                      <FileText className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-1">Encrypted Notes</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Securely store and manage your personal notes with end-to-end AES-256 encryption.</p>
+                  </div>
+                  <div className="flex items-center text-primary text-sm font-medium mt-auto">
+                    Access Vault <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

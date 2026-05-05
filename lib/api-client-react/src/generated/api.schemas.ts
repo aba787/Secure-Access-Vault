@@ -90,6 +90,25 @@ export interface SystemStats {
   recentActivity: AuditLog[];
 }
 
+export interface NoteBody {
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  title: string;
+  /** @minLength 1 */
+  content: string;
+}
+
+export interface Note {
+  id: number;
+  userId: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface MessageResponse {
   message: string;
 }

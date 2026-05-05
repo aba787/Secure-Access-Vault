@@ -44,10 +44,9 @@ export default function Login() {
   });
 
   useEffect(() => {
-    if (shake) {
-      const timer = setTimeout(() => setShake(false), 500);
-      return () => clearTimeout(timer);
-    }
+    if (!shake) return;
+    const timer = setTimeout(() => setShake(false), 500);
+    return () => clearTimeout(timer);
   }, [shake]);
 
   const login = useLogin({
